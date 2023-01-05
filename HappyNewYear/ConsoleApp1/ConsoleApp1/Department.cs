@@ -10,8 +10,8 @@ namespace ConsoleApp1
     internal class Department : IDepartment
     {
         public string Name;
-        public int EmployeeLimit;
-        public double SalaryLimit;
+        public int EmployeeLimit = 2;
+        public double SalaryLimit = 2000;
         private Employee[] _employees = { };
         public Employee[] Employees => _employees;
 
@@ -26,14 +26,14 @@ namespace ConsoleApp1
             {
                 try
                 {
-                    throw new Exception("Isci limiti dolub! Isci elave etmek mumkun deyil");
+                    throw new Exception(" Isci limiti dolub! Isci elave etmek mumkun deyil");
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
+                    Console.WriteLine($"\n{e.Message}\n");
                 }
             }
         }
-
 
         public Employee CreateEmployee()
         {
@@ -45,24 +45,23 @@ namespace ConsoleApp1
 
             do
             {
-                Console.Write("Employee'nin adini daxil edin: ");
+                Console.Write("\n Employee'nin adini daxil edin: ");
                 fullName = Console.ReadLine();
 
             } while (!Employee.CheckFullName(fullName));
 
             do
             {
-                Console.Write("Employee'nin maasini daxil edin (Yalniz reqemler ola biler!) : ");
+                Console.WriteLine($"\n Employee'nin maasini daxil edin. Maas max {SalaryLimit - CalculateCurrentAllSalary()} Teyin oluna biler!");
+                Console.Write(" Yalniz reqemler: ");
                 salaryStr = Console.ReadLine();
 
-            } while (!double.TryParse(salaryStr, out salary) || !CheckSalary(salary));
-
+            } while (!double.TryParse(salaryStr, out salary) || !CheckSettingSalary(salary));
 
             do
             {
-
-                Console.WriteLine("Format ay/gun/il seklinde olmalidir ve reqem daxil edin");
-                Console.WriteLine("Employee'nin baslama tarixini yazin");
+                Console.WriteLine("\n Employee'nin baslama tarixini yazin!");
+                Console.Write(" Format ay/gun/il saat:deqiqe:saniye seklinde olmalidir ve reqem daxil edin: ");
                 startDateStr = Console.ReadLine();
 
             } while (!DateTime.TryParse(startDateStr, out startDate));
@@ -75,79 +74,113 @@ namespace ConsoleApp1
             };
 
             return newEmployee;
-
         }
 
         public bool RemoveEmployee(string noStr)
         {
-            int no = 0;
             bool hasFound = false;
-            if (CheckNo(noStr, no))
+
+            if (int.TryParse(noStr, out int no))
             {
-                for (int i = no; i < _employees.Length - 1; i++)
+                if (_employees.Length > 1)
                 {
-                    _employees[i] = _employees[i + 1];
-                    hasFound = true;
-                }
-
-                if (hasFound)
-                {
-                    Array.Resize(ref _employees, _employees.Length - 1);
-
-                    return true;
-                }
-                else
-                {
-                    try
+                    if (_employees.Length == no)
                     {
-                        throw new Exception("Bu nomrede employee yoxdur");
+                        Array.Resize(ref _employees, _employees.Length - 1);
+                        return true;
                     }
-                    catch (Exception)
+
+                    for (int i = no - 1; i < _employees.Length - 1; i++)
                     {
-                        return false;
+                        _employees[i] = _employees[i + 1];
+                        hasFound = true;
+                    }
+
+                    if (hasFound)
+                    {
+                        Array.Resize(ref _employees, _employees.Length - 1);
+                        return true;
+                    }
+                    else
+                    {
+                        try
+                        {
+                            throw new Exception(" Bu nomrede employee yoxdur");
+                        }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine($"\n{e.Message}\n");
+                            return false;
+                        }
                     }
                 }
 
+                else if (_employees.Length == 1)
+                {
+                    if (no > 1 && no < 0)
+                    {
+                        try
+                        {
+                            throw new Exception(" Sirketde 1 eded isci var");
+                        }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine($"\n{e.Message}\n");
+                            return false;
+                        }
+                    }
+                    else
+                    {
+                        Array.Resize(ref _employees, _employees.Length - 1);
+                        return true;
+                    }
+                }
+                try
+                { 
+                    throw new Exception(" Sirkette isci yoxdur");
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine($"\n{e.Message}\n");
+                    return false;
+                }
             }
             else
             {
                 try
                 {
-                    throw new Exception("Yalniz reqem daxil edin");
+                    throw new Exception(" Yalniz reqem daxil edin");
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
+                    Console.WriteLine($"\n{e.Message}\n");
                     return false;
                 }
             }
-
-
-
-
         }
 
-        public bool SearchByName(string search)
+        public bool GetEmployeesByName(string search)
         {
+            search = search.ToLower();
+
             if (!string.IsNullOrWhiteSpace(search))
             {
                 for (int i = 0; i < search.Length; i++)
                 {
-
                     if (char.IsDigit(search[i]) || char.IsSymbol(search[i]))
                     {
-
                         try
                         {
-                            throw new Exception("Bas herfden sonrakilar kicik herf olmalidir! ");
+                            throw new Exception(" Bas herfden sonrakilar kicik herf olmalidir! ");
                         }
-                        catch (Exception)
+                        catch (Exception e)
                         {
+                            Console.WriteLine($"\n{e.Message}\n");
                             return false;
                         }
-
                     }
-
                 }
+
                 for (int i = 0; i < _employees.Length; i++)
                 {
                     if (_employees[i].FullName.ToLower().Contains(search))
@@ -157,49 +190,58 @@ namespace ConsoleApp1
                     }
                 }
                 return true;
-
-
             }
             else
             {
                 try
                 {
-                    throw new Exception("Herf daxil edin");
+                    throw new Exception(" Herf daxil edin");
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
+                    Console.WriteLine($"\n{e.Message}\n");
                     return false;
                 }
             }
-
         }
-        public void FindEmployeeByNo(string noStr)
-        {
-            int no = 0;
 
-            if (CheckNo(noStr, no))
+        public bool GetEmployeeByNo(string noStr)
+        {
+            if (int.TryParse(noStr, out int no))
             {
                 for (int i = 0; i < _employees.Length; i++)
                 {
                     if (_employees[i].No == no)
                     {
                         ShowInfo(_employees[i]);
+                        return true;
                     }
-
                 }
                 try
                 {
-                    throw new Exception("Bu nomrede employee yoxdur");
+                    throw new Exception(" Bu nomrede employee yoxdur");
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
+                    Console.WriteLine($"\n{e.Message}\n");
+                    return false;
                 }
             }
-
-
+            else
+            {
+                try
+                {
+                    throw new Exception(" Yalniz reqem daxil edin");
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine($"\n{e.Message}\n");
+                    return false;
+                }
+            }
         }
 
-        public void GetEmployeesByDate(DateTime startDate, DateTime endDate)//default now olmalidi 2ci parametrde
+        public void GetEmployeesByDate(DateTime startDate, DateTime endDate)//default " =DateTime.Now " qoyanda error cixir mellim hell ede bilmedim
         {
             bool hasFound = false;
 
@@ -210,204 +252,166 @@ namespace ConsoleApp1
                     hasFound = true;
                     ShowInfo(_employees[i]);
                 }
+
                 if (!hasFound)
+                {
+                    try
+                    {
+                        throw new Exception(" Axtardiginiz tarixde istifadeci yoxdur");
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine($"\n{e.Message}\n");
+                    }
+                }
+            }
+        }
+
+        public void ShowInfo(Employee employee)
+        {
+            Console.WriteLine($"\n Fullname: {employee.FullName} - Maasi: {employee.Salary} - Nomresi: {employee.No} - Baslama tarixi: {employee.Startdate}\n");
+        }
+
+        public bool UptadeSalary(int no, double newSalary)
+        {
+            Employee wantedEmp = new Employee();
+
+            do
+            {
+                for (int i = 0; i < _employees.Length; i++)
+                {
+                    if (_employees[i].No == no)
+                    {
+                        wantedEmp = _employees[i];
+                        break;
+                    }
+                }
+
+                if (wantedEmp == null)
+                {
+                    try
+                    {
+                        throw new Exception(" Bu nomrede employee yoxdur");
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine($"\n{e.Message}\n");
+                        return false;
+                    }
+                }
+            } while (wantedEmp == null);
+
+            if (CheckSalaryLimit(newSalary, wantedEmp.Salary))
+                wantedEmp.Salary = newSalary;
+
+            return true;
+        }
+
+        public bool CheckSalaryLimit(double newSalary, double employeeSalary)
+        {
+
+            if (!(newSalary >= 250))
+            {
+                try
+                {
+                    throw new Exception(" Maas 250 den yuxari olmalidir");
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine($"\n{e.Message}\n");
+                    return false;
+                }
+            }
+
+            else
+            {
+                if ((SalaryLimit - CalculateCurrentAllSalary()) >= (newSalary - employeeSalary))
+                    return true;
+
+                else
+                {
+                    try
+                    {
+                        throw new Exception($" Maas max {SalaryLimit - CalculateCurrentAllSalary()} Teyin oluna biler");
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine($"\n{e.Message}\n");
+                        return false;
+                    }
+                }
+            }
+        }
+
+        public bool CheckSettingSalary(double salary)
+        {
+            if (SalaryLimit - CalculateCurrentAllSalary() >= salary)
+            {
+                if (salary >= 250)
+                    return true;
+
+                else
                 {
 
                     try
                     {
-                        throw new Exception("Bu tarixde employee yoxdur");
+                        throw new Exception(" Maas 250 den az ola bilmez!");
                     }
-                    catch (Exception)
+                    catch (Exception e)
                     {
-
+                        Console.WriteLine($"\n{e.Message}\n");
+                        return false;
                     }
-
                 }
-            }
-        }
-        public void ShowInfo(Employee employee)
-        {
-            Console.WriteLine($"Fullname: {employee.FullName} - Maasi: {employee.Salary} - Nomresi: {employee.No} - Baslama tarixi: {employee.Startdate}");
-        }
-
-
-        public bool UptadeSalary(string noStr, string salaryStr)
-        {
-            int no = 0;
-            double newSalary = 0;
-            Employee wantedEmp = new Employee();
-
-            if (CheckNo(noStr, no) && CheckNo(salaryStr, newSalary))
-            {
-
-                do
-                {
-                    for (int i = 0; i < _employees.Length; i++)
-                    {
-                        if (_employees[i].No == no)
-                        {
-                            wantedEmp = _employees[i];
-
-                        }
-                    }
-                    if (wantedEmp == null)
-                    {
-                        try
-                        {
-                            throw new Exception("Bu nomrede employee yoxdur");
-                        }
-                        catch (Exception)
-                        {
-                            return false;
-                        };
-                    }
-
-                } while (!CheckSalary(wantedEmp.Salary));
-
-                wantedEmp.Salary = newSalary;
-                return true;
             }
             else
             {
 
                 try
                 {
-                    throw new Exception("Yalniz reqem daxil edin");
+                    throw new Exception(" Maas limiti asir");
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
-                    return false;
-                };
-            }
-
-        }
-
-
-        public bool CheckSalary(double newSalary)
-        {
-            if (newSalary! >= 250)
-            {
-                try
-                {
-                    throw new Exception("Maas 250 den yuxari olmalidir");
-                }
-                catch (Exception)
-                {
+                    Console.WriteLine($"\n{e.Message}\n");
                     return false;
                 }
             }
-
-            double salaryLimit = 0;
-
-            salaryLimit += newSalary + CalculateCurrentAllSalary();
-
-            if (salaryLimit <= SalaryLimit)
-                return true;
-            else
-            {
-                try
-                {
-                    throw new Exception($"Maas max {SalaryLimit - CalculateCurrentAllSalary()} Teyin oluna biler");
-                }
-                catch (Exception)
-                {
-                    return false;
-                }
-            }
-
         }
 
         public double CalculateCurrentAllSalary()
         {
-            double salaryLimit = 0;
+            double allSalary = 0;
 
-            for (int i = 0; i < Employees.Length; i++)
+            for (int i = 0; i < _employees.Length; i++)
             {
-                salaryLimit += Employees[i].Salary;
+                allSalary += _employees[i].Salary;
             }
-            return salaryLimit;
+            return allSalary;
         }
 
-        public bool CheckNo(string noStr, int no)
-        {
-            if (int.TryParse(noStr,out no))
-            {
-                return true;
-            }
-
-            else
-            {
-
-                try
-                {
-                    throw new Exception("Yalniz reqem daxil edin");
-                }
-                catch (Exception)
-                {
-                    return false;
-                };
-            }
-        }
-        public bool CheckNo(string salaryStr, double salary)
-        {
-            if (double.TryParse(salaryStr, out salary))
-            {
-                return true;
-            }
-
-            else
-            {
-
-                try
-                {
-                    throw new Exception("Yalniz reqem daxil edin");
-                }
-                catch (Exception)
-                {
-                    return false;
-                };
-            }
-        }
         public bool CheckEmployeeLimit()
         {
             if (_employees.Length < EmployeeLimit)
                 return true;
             else
-                return false;
+                try
+                {
+                    throw new Exception(" Isci limiti dolmusdur!");
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine($"\n{e.Message}\n");
+                    return false;
+                }
         }
 
+        public void ShowAllEmployees()
+        {
+            for (int i = 0; i < _employees.Length; i++)
+            {
+                ShowInfo(_employees[i]);
+            }
+        }
     }
-}//Her employe elave eliyende yoxla gor salary limit ve employee limiti asir mi
-
-//EmployeeFullName yalnız hərflərdən ibarət olmalıdır və Böyük hərflə başlamalıdır, ozun kapitilayz eliye bilersen bas herflerini
-//Salary dəyəri 250-dən aşağı ola bilməz
-
-//1.Do while
-//2. try catch
-//3. menyu duzeltmek
-
-
-
-//Employee class
-// -No employe yarananda ozu nomre versin.
-// - FullName
-// - Salary
-// - StartDate
-
-//IDepartment
-// - Employees
-// - AddEmployee()
-// - RemoveEmployee()
-// - Search()
-
-//Department class
-// -Name
-// - EmployeeLimit
-// - SalaryLimit
-// - Employees
-// - AddEmployee() Add employeda (start date) olsun 
-// - RemoveEmployee(no)
-// - GetEmployeesByDates(fromDate, toDate) GetEmployeByDate()de 2ci parametr optionaldi, default now'du
-// - FindEmployeeByNo(no)
-// - UpdateSalary(no, newSalary)
-// - Search()
+}

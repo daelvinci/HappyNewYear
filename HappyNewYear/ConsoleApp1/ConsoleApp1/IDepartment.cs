@@ -10,6 +10,6 @@ namespace ConsoleApp1
         void AddEmployee(Employee newEmployee);
         void GetEmployeesByDate(DateTime startDate, DateTime endDate);
         bool RemoveEmployee(string noStr);
-        bool SearchByName(string search);
+        bool GetEmployeesByName(string search);
     }
 }

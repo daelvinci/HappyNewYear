@@ -15,22 +15,23 @@ namespace ConsoleApp1
             string numStr;
             Department balvini = new Department();
 
-
             do
             {
-
-                Console.WriteLine(" 1. Isci elave et");
-                Console.WriteLine(" 2. Iscinin maasini deyisdir");
-                Console.WriteLine(" 3. Tarixe gore iscilere bax");
-                Console.WriteLine(" 4. Nomreye gore iscilere bax");
-                Console.WriteLine(" 5. Butun iscilere bax");
-                Console.WriteLine(" 6. nomresine gore iscini sil");
-                Console.WriteLine(" 7. Adina gore axtaris et");
-                Console.WriteLine("0. Menyudan cix");
+                Console.WriteLine("\n 1. Isci elave et\n");
+                Console.WriteLine(" 2. Iscinin maasini deyisdir\n");
+                Console.WriteLine(" 3. Iscilere tarixe gore bax\n");
+                Console.WriteLine(" 4. Iscilere nomreye gore bax\n");
+                Console.WriteLine(" 5. Iscilerin hamisina bax\n");
+                Console.WriteLine(" 6. Iscini nomresine gore sil\n");
+                Console.WriteLine(" 7. Iscinin adina gore axtaris et\n");
+                Console.WriteLine(" 0. Menyudan cix\n");
                 numStr = Console.ReadLine();
                 string noStr;
+                int no;
                 string salaryStr;
+                double newSalary;
 
+                
                 switch (numStr)
                 {
                     case "1":
@@ -40,86 +41,80 @@ namespace ConsoleApp1
                     case "2":
                         do
                         {
-
-                            Console.WriteLine("Iscinin nomresini daxil edin");
-                            noStr = Console.ReadLine();
-
-                            Console.WriteLine("Yeni maasi daxil edin");
-                            salaryStr = Console.ReadLine();
-                            balvini.UptadeSalary(noStr, salaryStr);
-
-
-                        } while (!balvini.UptadeSalary(noStr, salaryStr));
-                        break;
-
-                    case "3":
-
-                        do
-                        {
                             do
                             {
 
-                                Console.WriteLine("Format ay/gun/il seklinde olmalidir ve reqem daxil edin");
-                                Console.WriteLine("Employee'nin baslama tarixini yazin");
-                                startDateStr = Console.ReadLine();
-                                Console.WriteLine("Son tarixini yazin");
-                                endDateStr = Console.ReadLine();
+                                Console.Write("\n Iscinin nomresini daxil edin (Yalniz reqem daxil edin): ");
+                                noStr = Console.ReadLine();
 
-                            } while (!DateTime.TryParse(startDateStr, out startDate) || !DateTime.TryParse(endDateStr, out endDate));
+                            } while (!int.TryParse(noStr, out no));
 
-                            balvini.GetEmployeesByDate()
+                            do
+                            {
+                                Console.Write("\n Yeni maasi daxil edin (Yalniz reqem daxil edin): ");
+                                salaryStr = Console.ReadLine();
 
-                        } while (true);
+                            } while (!double.TryParse(salaryStr,out newSalary));
+
+                        } while (!balvini.UptadeSalary(no, newSalary));
+
+                        break;
+
+                    case "3":
+                        do
+                        {
+
+                            Console.Write("\n Employee'nin baslama tarixini yazin! ");
+                            Console.Write("\n Format ay/gun/il seklinde olmalidir ve yalniz reqem daxil edin: ");
+                            startDateStr = Console.ReadLine();
+                            Console.Write("\n Son tarixini yazin: ");
+                            endDateStr = Console.ReadLine();
+
+                        } while (!DateTime.TryParse(startDateStr, out startDate) || !DateTime.TryParse(endDateStr, out endDate));
+
+                        balvini.GetEmployeesByDate(startDate, endDate);
+                        break;
+
+                    case "4":
+                        string search;
+                        do
+                        {
+                            Console.Write("\n Axtaris etmek istediyiniz deyeri daxil edin: ");
+                            search = Console.ReadLine();
+
+                        } while (!balvini.GetEmployeeByNo(search));
+
+                        break;
+
+                    case "5":
+                        balvini.ShowAllEmployees();
+                        break;
 
 
+                    case "6":
+                        string employeeNoStr;
+                        do
+                        {
+                            Console.Write("\n Silmek istediyiniz employeenin nomresini daxil edin: ");
+                            employeeNoStr = Console.ReadLine();
 
+                        } while (!balvini.RemoveEmployee(employeeNoStr));
+                      
+                        break;
 
+                    case "7":
+                        string employeeName;
+                        do
+                        {
+                            Console.Write("\n Axtarmaq istediyiniz employeenin adini daxil edin: ");
+                            employeeName = Console.ReadLine();
 
+                        } while (!balvini.GetEmployeesByName(employeeName));
+                      
+                        break;
                 }
 
-
             } while (numStr != "0");
-
-
         }
     }
-}//Her employe elave eliyende yoxla gor salary limit ve employee limiti asir mi
- //GetEmployeByDate()de 2ci parametr optionaldi, default now'du
- //Add employeda (start date) olsun 
- ////employe yarananda ozu nomre versin.
-
-//Employee class
-// -No
-// - FullName
-// - Salary
-// - StartDate
-
-//IDepartment
-// - Employees
-// - AddEmployee()
-// - RemoveEmployee()
-// - Search()
-
-//Department class
-// -Name
-// - EmployeeLimit
-// - SalaryLimit
-// - Employees
-// - AddEmployee()
-// - RemoveEmployee(no)
-// - GetEmployeesByDates(fromDate, toDate)
-// - FindEmployeeByNo(no)
-// - UpdateSalary(no, newSalary)
-// - Search()
-
-
-//EmployeeFullName yalnız hərflərdən
-//ibarət olmalıdır və Böyük hərflə başlamalıdır
-//Salary dəyəri 250-dən aşağı ola bilməz
-//AddEmployee metodu employees array-e employee obyekti
-//əlavə etmək üçündür.
-
-//Console.WriteLine("Hello World!");
-//Department balvini = new Department();
-
-//balvini.AddEmployee(balvini.CreateEmployee());
+}

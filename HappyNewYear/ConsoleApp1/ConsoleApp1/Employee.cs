@@ -9,14 +9,14 @@ namespace ConsoleApp1
     internal class Employee
     {
         private static int _counter;
-        static Employee()
+        public Employee()
         {
             _counter++;
             _no = _counter;
         }
 
         public int No => _no;
-        private static int _no;
+        private int _no;
 
         public string FullName
         {
@@ -48,125 +48,94 @@ namespace ConsoleApp1
             {
 
                 fullName = fullName.Trim();
-                string[] split = fullName.Split(' ');
+                string[] splitted = fullName.Split(' ');
 
 
-                if (split.Length != 2)
+                if (splitted.Length != 2)
                 {
                     try
                     {
-                        throw new Exception("Fullname'i yalniz 2 sozden ibaret ola biler ve Sozler arasinde 1 bosluq qoyun");
+                        throw new Exception(" Fullname'i yalniz 2 sozden ibaret ola biler ve Sozler arasinde 1 bosluq qoyun");
                     }
-                    catch (Exception)
+                    catch (Exception e)
                     {
+                        Console.WriteLine($"\n{e.Message}\n");
                         return false;
                     }
                 }
 
                 else
                 {
-                    if (!char.IsUpper(split[0][0]) || !char.IsUpper(split[1][0]))
+                    if (splitted[0].Length > 1 && splitted[1].Length > 1)
                     {
-                        try
+                        if (!char.IsUpper(splitted[0][0]) || !char.IsUpper(splitted[1][0]))
                         {
-                            char.ToUpper(split[0][0]);
-                            char.ToUpper(split[0][0]);
-                        }
-                        catch (Exception)
-                        {
-                            Console.WriteLine("Yalniz Herfler daxil oluna biler ");
-                            return false;
-                        }
-                    }
-
-                    for (int i = 0; i < split[i].Length; i++)
-                    {
-                        for (int j = 1; j < split[i].Length; j++)
-                        {
-                            if (!char.IsDigit(split[i][j]) || !char.IsSymbol(split[i][j]))
+                            try
                             {
-                                if (!char.IsUpper(split[i][j]))
-                                    return true;
-                                else
-                                {
-                                    try
-                                    {
-                                        throw new Exception("Bas herfden sonrakilar kicik herf olmalidir! ");
-                                    }
-                                    catch (Exception)
-                                    {
-                                        return false;
-                                    }
-                                }
+                                char.ToUpper(splitted[0][0]);
+                                char.ToUpper(splitted[1][0]);
                             }
-                            else
+                            catch (Exception)
+                            {
+                                Console.WriteLine("\n Yalniz herfler daxil oluna biler\n");
+                                return false;
+                            }
+                        }
+
+                        for (int i = 0; i < splitted.Length; i++)
+                        {
+                            if (HasSymbolAndHasDigitAndHasUpper(splitted[i]))
                             {
                                 try
                                 {
-                                    throw new Exception("Yalniz herfler daxil oluna biler");
+                                    throw new Exception(" Yalniz herfler daxil oluna biler");
                                 }
-                                catch (Exception)
+                                catch (Exception e)
                                 {
+                                    Console.WriteLine($"\n{e.Message}\n");
                                     return false;
                                 }
                             }
-
+                        }
+                        return true;
+                    }
+                    else
+                    {
+                        try
+                        {
+                            throw new Exception(" Ad ve soyadin uzunlugu min. 2 olmalidi!");
+                        }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine($"\n{e.Message}\n");
+                            return false;
                         }
                     }
-                    return true;
-
                 }
-               
+
             }
             else
             {
 
                 try
                 {
-                    throw new Exception("Herf daxil edin");
+                    throw new Exception(" Herf daxil edin");
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
+                    Console.WriteLine($"\n{e.Message}\n");
                     return false;
                 }
             }
         }
+        public static bool HasSymbolAndHasDigitAndHasUpper(string input)
+        {
+            for (int i = 1; i < input.Length; i++)
+            {
+                if (char.IsSymbol(input[i]) && char.IsDigit(input[i]) && char.IsUpper(input[i]))
+                    return true;
+            }
+            return false;
+        }
     }
 }
-
-//Her employe elave eliyende yoxla gor salary limit ve employee limiti asir mi
-//GetEmployeByDate()de 2ci parametr optionaldi, default now'du
-//Add employeda (start date) olsun 
-////employe yarananda ozu nomre versin.
-
-//Employee class
-// -No
-// - FullName
-// - Salary
-// - StartDate
-
-//IDepartment
-// - Employees
-// - AddEmployee()
-// - RemoveEmployee()
-// - Search()
-
-//Department class
-// -Name
-// - EmployeeLimit
-// - SalaryLimit
-// - Employees
-// - AddEmployee()
-// - RemoveEmployee(no)
-// - GetEmployeesByDates(fromDate, toDate)
-// - FindEmployeeByNo(no)
-// - UpdateSalary(no, newSalary)
-// - Search()
-
-
-//EmployeeFullName yalnız hərflərdən
-//ibarət olmalıdır və Böyük hərflə başlamalıdır
-//Salary dəyəri 250-dən aşağı ola bilməz
-//AddEmployee metodu employees array-e employee obyekti
-//əlavə etmək üçündür.
-
